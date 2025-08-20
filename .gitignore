@@ -1,6 +1,7 @@
 *.env
 !*.env.example
 node_modules/
+Caddyfile
 caddy_data
 caddy_config
 Voxar.code-workspace
