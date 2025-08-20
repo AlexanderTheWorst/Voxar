@@ -5,3 +5,5 @@ Caddyfile
 caddy_data
 caddy_config
 Voxar.code-workspace
+prisma/*.db
+prisma/migrations
