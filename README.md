@@ -1,1 +1,3 @@
-<li style="color: red">Hola!</li>
+<ul>
+  <li>GAY!</li>
+</ul>
