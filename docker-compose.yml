@@ -1,0 +1,40 @@
+services:
+
+  caddy:
+    image: caddy:latest
+    container_name: caddy
+    ports:
+      - "8000:80"
+      - "4430:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile   # your config
+      - ./caddy/caddy_data:/data                 # SSL certs & state
+      - ./caddy/caddy_config:/config             # runtime config
+    restart: unless-stopped
+
+  website:
+    image: node:alpine3.22
+    container_name: website
+    working_dir: /app
+    env_file:
+      - ./.env
+    volumes:
+      - ./website:/app
+      - ./prisma:/prisma
+    command: sh -c "npm run start"
+    restart: unless-stopped
+  
+  bot:
+    image: node:alpine3.22
+    container_name: bot
+    working_dir: /app
+    env_file:
+      - ./.env
+    volumes:
+      - ./bot:/app
+      - ./prisma:/prisma
+    command: sh -c "npm run start"
+    restart: unless-stopped
+
+volumes:
+  db_data:
