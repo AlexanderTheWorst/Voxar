@@ -18,7 +18,7 @@ if (!isInDocker()) {
 }
 
 app.get("/", (req, res) => {
-    res.send(process.env.DOCKER, process.env.DOCKER_NAME);
+    res.send(process.env.DOCKER ? "Docker!" : "Not a docker!", process.env.DOCKER_NAME);
 })
 
 app.listen(3000, () => {
