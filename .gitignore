@@ -1,9 +1,31 @@
-*.env
-!*.env.example
 node_modules/
+
+# Caddy
 Caddyfile
 caddy_data
 caddy_config
-Voxar.code-workspace
+
+# Database
 prisma/*.db
 prisma/migrations
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Workspace
+*.code-workspace
