@@ -18,6 +18,9 @@ services:
     working_dir: /app
     env_file:
       - ./.env
+    environment:
+      DOCKER: true
+      DOCKER_NAME: "@voxar/website"
     volumes:
       - ./website:/app
       - ./prisma:/prisma
@@ -30,6 +33,9 @@ services:
     working_dir: /app
     env_file:
       - ./.env
+    environment:
+      DOCKER: true
+      DOCKER_NAME: "@voxar/bot"
     volumes:
       - ./bot:/app
       - ./prisma:/prisma

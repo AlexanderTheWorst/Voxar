@@ -10,20 +10,17 @@ function isInDocker() {
     }
 }
 
+const express = require("express");
+const app = express();
+
 if (!isInDocker()) {
     require("dotenv").config({ path: "../.env", quiet: true, override: true })
 }
 
-const client = new PrismaClient();
+app.get("/", (req, res) => {
+    res.send(process.env.DOCKER, process.env.DOCKER_NAME);
+})
 
-(async () => {
-    console.log("HELLO!");
-
-    let user = await client.user.create({
-        data: {}
-    });
-
-    console.log(user);
-})();
-
-setInterval(() => {}, 1e6); // keeps Node alive without blocking the event loop
+app.listen(3000, () => {
+    console.log("* localhost:3000");
+});
