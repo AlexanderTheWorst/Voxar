@@ -11,6 +11,8 @@ services:
       - ./caddy/caddy_data:/data                 # SSL certs & state
       - ./caddy/caddy_config:/config             # runtime config
     restart: unless-stopped
+    networks:
+      - shared
 
   website:
     image: node:alpine3.22
@@ -26,6 +28,8 @@ services:
       - ./prisma:/prisma
     command: sh -c "npm run start"
     restart: unless-stopped
+    networks:
+      - shared
   
   bot:
     image: node:alpine3.22
@@ -41,6 +45,12 @@ services:
       - ./prisma:/prisma
     command: sh -c "npm run start"
     restart: unless-stopped
+    networks:
+      - shared
 
 volumes:
   db_data:
+
+networks:
+  shared:
+    driver: bridge
