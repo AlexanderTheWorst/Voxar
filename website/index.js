@@ -18,6 +18,7 @@ if (!isInDocker()) {
 }
 
 app.get("/", (req, res) => {
+    console.log(process.env.DOCKER, process.env.DOCKER_NAME, process.env.ROBLOX_OAUTH2_TEST)
     res.send(process.env.DOCKER ? "Docker!" : "Not a docker!", process.env.DOCKER_NAME);
 })
 
