@@ -7,8 +7,6 @@ const {
     DISCORD_OAUTH2_REDIRECT_URI_DEV: discord_redirect_uri_dev = undefined,
 } = process.env;
 
-console.log(discord_client_id, discord_client_secret, discord_redirect_uri, discord_redirect_uri_dev)
-
 function extractQueries(searchParams) {
     let entries = searchParams.entries();
     let lookup = {};
