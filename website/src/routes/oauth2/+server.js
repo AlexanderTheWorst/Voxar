@@ -10,7 +10,7 @@ const {
 function extractQueries(searchParams) {
     let entries = searchParams.entries();
     let lookup = {};
-    entries.forEach(a => lookup[a[0]] = a[1]);
+    entries.forEach(([key, value]) => lookup[key] = value);
     return lookup;
 }
 
@@ -18,8 +18,6 @@ function getDiscordOAuth2Link(request) {
     const { hostname } = request.url;
 
     let redirect_uri = (["localhost", "127.0.0.1"]).includes(hostname) ? discord_redirect_uri_dev : discord_redirect_uri;
-
-    console.log(hostname, redirect_uri);
 
     return (`
     https://discord.com/oauth2/authorize?client_id=${discord_client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=identify+guilds
