@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+		"install:all": "npm i && cd website && npm i && cd ../ && cd bot && npm i"
   },
   "keywords": [],
   "author": "",
