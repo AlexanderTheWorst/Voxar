@@ -19,7 +19,7 @@ function getDiscordOAuth2Link(request) {
 
     let redirect_uri = (["localhost", "127.0.0.1"]).includes(hostname) ? discord_redirect_uri_dev : discord_redirect_uri;
 
-    console.log(redirect_uri);
+    console.log(hostname)
 
     return (`
     https://discord.com/oauth2/authorize?client_id=${discord_client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=identify+guilds
