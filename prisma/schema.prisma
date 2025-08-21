@@ -1,13 +1,13 @@
 generator website_client {
   provider = "prisma-client-js"
   output   = "../website/node_modules/@prisma/client"
-  binaryTargets = "linux-musl-openssl-3.0.x"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 generator bot_client {
   provider = "prisma-client-js"
   output   = "../bot/node_modules/@prisma/client"
-  binaryTargets = "linux-musl-openssl-3.0.x"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
