@@ -1,3 +1,4 @@
+import { tokenExchange as discordTokenExchange, whoami as discordWhoAmI } from '$lib/discord-rest-api.js';
 import { json, redirect } from '@sveltejs/kit';
 
 const { 
@@ -14,25 +15,30 @@ function extractQueries(searchParams) {
     return lookup;
 }
 
-function getDiscordOAuth2Link(request) {
+function getDiscordRedirectUri(request) {
     const { hostname } = request.url;
+    return (["localhost", "127.0.0.1"]).includes(hostname) ? discord_redirect_uri_dev : discord_redirect_uri;
+}
 
-    let redirect_uri = (["localhost", "127.0.0.1"]).includes(hostname) ? discord_redirect_uri_dev : discord_redirect_uri;
+function getDiscordOAuth2Link(request) {
+    let redirect_uri = getDiscordRedirectUri(request);
 
     return (`
-    https://discord.com/oauth2/authorize?client_id=${discord_client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=identify+guilds
+        https://discord.com/oauth2/authorize?client_id=${discord_client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=identify+guilds
     `).trim();
 }
 
-function discordOAuth2(request, code) {
+async function discordOAuth2(request, code) {
+    let redirect_uri = getDiscordRedirectUri(request);
     let oauth2Link = getDiscordOAuth2Link(request);
 
     if (!code) return redirect(307, oauth2Link);
 
+    const token = await discordTokenExchange(code, redirect_uri);
+    const whoami = await discordWhoAmI(token.access_token);
+
     return new Response(
-        new URLSearchParams({
-            code
-        }),
+        JSON.stringify(whoami),
         {
             status: 200,
             headers: new Headers({
@@ -54,8 +60,8 @@ export async function GET(request) {
 
     switch (platform.toLowerCase()) {
         case null: return redirect("/");
-        case "discord": return discordOAuth2(request, code, query);
-        case "roblox": return robloxOAuth2(request, code, query)
+        case "discord": return await discordOAuth2(request, code, query);
+        case "roblox": return await robloxOAuth2(request, code, query)
     }
 
     return new Response(
