@@ -1,6 +1,6 @@
 const base = 'https://discord.com/api/v10';
 
-const { 
+const {
     DISCORD_OAUTH2_CLIENT_ID: client_id = undefined,
     DISCORD_OAUTH2_CLIENT_SECRET: client_secret = undefined,
 } = process.env;
@@ -12,7 +12,7 @@ const {
 */
 export async function tokenExchange(code, redirect_uri) {
     try {
-        return await fetch(`${base}/oauth2/token`, {
+        const res = await fetch(`${base}/oauth2/token`, {
             method: "POST",
             body: new URLSearchParams({
                 grant_type: 'authorization_code',
@@ -21,14 +21,19 @@ export async function tokenExchange(code, redirect_uri) {
             }),
             headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${btoa(client_id+":"+client_secret)}`
+                'Authorization': `Basic ${btoa(client_id + ":" + client_secret)}`
             })
-        }).then(res => res.json());
+        });
+
+        if (!res.ok) {
+            return null;
+        }
+    
+        return await res.json();
     } catch (err) {
         console.warn(err);
+        return null;
     }
-
-    return console.warn("There was an error with the token exchange.");
 }
 
 /* 
@@ -37,7 +42,7 @@ export async function tokenExchange(code, redirect_uri) {
 */
 export async function tokenRefresh(refresh_token) {
     try {
-        return await fetch(`${base}/oauth2/token`, {
+        const res = await fetch(`${base}/oauth2/token`, {
             method: "POST",
             body: new URLSearchParams({
                 grant_type: 'refresh_token',
@@ -45,14 +50,19 @@ export async function tokenRefresh(refresh_token) {
             }),
             headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${btoa(client_id+":"+client_secret)}`
+                'Authorization': `Basic ${btoa(client_id + ":" + client_secret)}`
             })
-        }).then(res => res.json());
+        });
+
+        if (!res.ok) {
+            return null;
+        }
+    
+        return await res.json();
     } catch (err) {
         console.warn(err);
+        return null;
     }
-
-    return console.warn("There was an error with the token exchange.");
 }
 
 /* 
@@ -61,15 +71,20 @@ export async function tokenRefresh(refresh_token) {
 */
 export async function whoami(access_token) {
     try {
-        return await fetch(`${base}/oauth2/@me`, {
+        const res = await fetch(`${base}/oauth2/@me`, {
             headers: new Headers({
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${access_token}`
             })
-        }).then(res => res.json());
+        });
+
+        if (!res.ok) {
+            return null;
+        }
+    
+        return await res.json();
     } catch (err) {
         console.warn(err);
+        return null;
     }
-
-    return console.warn("There was an error with the token exchange.");
 }

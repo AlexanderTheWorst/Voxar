@@ -1,7 +1,7 @@
 import { tokenExchange as discordTokenExchange, whoami as discordWhoAmI } from '$lib/discord-rest-api.js';
-import { json, redirect } from '@sveltejs/kit';
+import { error, json, redirect } from '@sveltejs/kit';
 
-const { 
+const {
     DISCORD_OAUTH2_CLIENT_ID: discord_client_id = undefined,
     DISCORD_OAUTH2_CLIENT_SECRET: discord_client_secret = undefined,
     DISCORD_OAUTH2_REDIRECT_URI: discord_redirect_uri = undefined,
@@ -29,13 +29,31 @@ function getDiscordOAuth2Link(request) {
 }
 
 async function discordOAuth2(request, code) {
+    const query = extractQueries(request.url.searchParams);
+
     let redirect_uri = getDiscordRedirectUri(request);
     let oauth2Link = getDiscordOAuth2Link(request);
 
     if (!code) return redirect(307, oauth2Link);
 
     const token = await discordTokenExchange(code, redirect_uri);
+    if (!token)
+        return new Response(
+            JSON.stringify({
+                status: 404,
+                body: {
+                    message: "Invalid code passed by code query."
+                }
+            }),
+            {
+                status: 404,
+                headers: new Headers({ "Content-Type": "application/json" })
+            }
+        );
+
     const whoami = await discordWhoAmI(token.access_token);
+
+    console.log(token.message, whoami.message);
 
     return new Response(
         JSON.stringify(whoami),
