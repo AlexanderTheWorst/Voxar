@@ -5,6 +5,7 @@ export async function GET(event) {
     const { cookies } = event;
 
     if (cookies.get('session')) throw redirect(307, '/');
+    console.log(event.locals);
 
     const oauth2Link = getOAuth2Link(event);
     throw redirect(307, oauth2Link);

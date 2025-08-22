@@ -2,6 +2,7 @@ import { tokenExchange, whoami as _whoami, getRedirectUri } from '$lib/discord-a
 import { SessionModel } from "$lib/prisma/models/session.js";
 import { v4 as uuidv4 } from "uuid";
 import { redirect } from '@sveltejs/kit';
+import * as SessionModel from '$lib/prisma/models/session.js';
 
 export async function GET(event) {
     const { cookies, url } = event;
