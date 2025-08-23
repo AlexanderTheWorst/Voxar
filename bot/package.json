@@ -2,16 +2,19 @@
   "name": "@voxar/bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "start": "node ."
+    "dev": "nodemon ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "discord.js": "^14.22.1",
     "dotenv": "^17.2.1",
+    "fastify": "^5.5.0",
+    "fastify-plugin": "^5.0.1",
     "prisma": "^6.14.0"
   }
 }
