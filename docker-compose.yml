@@ -3,9 +3,9 @@ services:
   caddy:
     image: caddy:latest
     container_name: caddy
-    ports:
-      - "80:80"
-      - "443:443"
+    # ports:
+    #   - "80:80"
+    #   - "443:443"
     volumes:
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile   # your config
       - ./caddy/caddy_data:/data                 # SSL certs & state
@@ -30,6 +30,10 @@ services:
     restart: unless-stopped
     networks:
       - shared
+    depends_on:
+      - bot
+    ports:
+      - "3000:3000"
   
   bot:
     image: node:alpine3.22

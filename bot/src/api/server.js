@@ -7,7 +7,7 @@ const fastify = Fastify({ logger: false });
 fastify.register(authPlugin);
 fastify.register(botRoutes, { prefix: '/@bot' });
 
-fastify.listen({ port: 3000 })
+fastify.listen({ port: 3000, host: '0.0.0.0' })
     .then(() => console.log('Fastify API running on port 3000'))
     .catch(err => {
         fastify.log.error(err);

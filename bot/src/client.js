@@ -1,10 +1,7 @@
 import { BitField, Client, Events, GatewayIntentBits, Partials } from "discord.js";
 import { readdirSync, readFileSync } from "fs";
 import { resolve, dirname, relative, join } from "path";
-import { config } from "dotenv";
 import { fileURLToPath, pathToFileURL } from "url";
-
-config({ path: "../.env", quiet: true, override: true });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

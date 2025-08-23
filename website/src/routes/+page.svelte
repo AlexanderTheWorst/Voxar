@@ -1,7 +1,7 @@
 <script>
     export let data;
 
-    const { user, guilds } = data;
+    const { user, guilds, mutuals } = data;
 </script>
 
 <div class="p-[20px] flex flex-col gap-[10px]">
@@ -21,10 +21,14 @@
         {/if}
     </div>
     {#if guilds}
-        <ul>
+        <ul class="flex flex-col gap-[10px]">
             {#each guilds as guild}
-                <li>
+                <li class="items-center flex flex-row gap-[10px]">
                     <p>{guild.id}, {guild.name}</p>
+                    <a
+                        href="/dashboard/@guild/{guild.id}"
+                        class="bg-black/5 p-[15px] rounded-xl w-fit">{mutuals.find(g => g.id === guild.id) ? "Manage" : "Add"}</a
+                    >
                 </li>
             {/each}
         </ul>

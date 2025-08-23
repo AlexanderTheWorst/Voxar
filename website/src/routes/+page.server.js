@@ -17,9 +17,21 @@ export async function load({ cookies }) {
   let guilds = await getGuilds(session.access_token);
   if (guilds) guilds = guilds.filter(g => hasPermission(g.permissions, DiscordPermissions.MANAGE_GUILD));
 
+  // Fetch mutual servers
+  const response = await fetch(`http://${process.env.DOCKER ? "bot:3000" : "localhost:3000"}/@bot/servers/@me`, {
+    headers: {
+      "Authorization": session.access_token
+    }
+  });
+
+  let mutuals;
+  if (!response.ok) console.warn(await response.text()); // optional debugging
+  else mutuals = await response.json();
+
   // Expose only safe user fields to frontend
   return {
     user,
-    guilds
+    guilds,
+    mutuals: (mutuals ?? [])
   };
 }

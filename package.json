@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
 		"install:all": "npm i && cd website && npm i && cd ../ && cd bot && npm i",
-    "dockerize": "git pull && npm run install:all && sudo docker compose down -v && sudo docker compose up --build -d"
+    "compose": "sudo docker compose -v && sudo docker compose up --build -d",
+    "dockerize": "git pull && npm run install:all && npm run compose"
   },
   "keywords": [],
   "author": "",
