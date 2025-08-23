@@ -3,16 +3,10 @@ import { getGuilds } from "../../../lib/discord-api.js";
 
 export default async function routes(fastify) {
   // GET /@bot/servers/@me
-  fastify.get('/servers/@me', { preHandler: fastify.authenticate }, async (request, reply) => {
+  fastify.get('/servers', { preHandler: fastify.authenticate }, async (request, reply) => {
     const { authorization } = request.headers;
     if (!authorization) {
       return reply.code(401).send({ error: 'Missing access token' });
-    }
-
-    // Fetch user guilds (cached)
-    const userGuilds = await getGuilds(authorization);
-    if (!userGuilds || !userGuilds.length) {
-      return reply.code(404).send({ error: 'No accessible servers found' });
     }
 
     // Fetch bot guilds
@@ -24,13 +18,8 @@ export default async function routes(fastify) {
       features: g.features
     }));
 
-    // Compute mutual guilds
-    const mutualGuilds = botGuilds.filter(bg =>
-      userGuilds.some(ug => ug.id === bg.id)
-    );
-
     // Return safe data
-    return mutualGuilds;
+    return botGuilds;
   });
 
   // GET /@bot/servers/:server_id

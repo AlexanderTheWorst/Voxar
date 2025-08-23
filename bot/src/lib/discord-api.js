@@ -96,12 +96,11 @@ export async function getGuilds(access_token) {
         });
 
         if (!res.ok) {
-            console.log(res.text());
             return null;
         }
 
        let json = await res.json();
-        setCache(`guilds_${access_token}`, json, 60_000);
+        setCache(`guilds_${access_token}`, json, 30_000);
         return json;
     } catch (err) {
         console.warn(err);

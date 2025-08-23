@@ -18,7 +18,7 @@ export async function load({ cookies }) {
   if (guilds) guilds = guilds.filter(g => hasPermission(g.permissions, DiscordPermissions.MANAGE_GUILD));
 
   // Fetch mutual servers
-  const response = await fetch(`http://${process.env.DOCKER ? "bot:3000" : "localhost:3000"}/@bot/servers/@me`, {
+  const response = await fetch(`http://${process.env.DOCKER ? "bot:3000" : "localhost:3000"}/@bot/servers`, {
     headers: {
       "Authorization": session.access_token
     }
