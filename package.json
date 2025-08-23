@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-		"install:all": "npm i && cd website && npm i && cd ../ && cd bot && npm i",
-    "compose": "sudo docker compose -v && sudo docker compose up --build -d",
-    "dockerize": "npm run compose"
+		"install:all": "git pull && npm i && cd website && npm i && cd ../ && cd bot && npm i",
+    "compose": "sudo docker compose -v && sudo docker compose up --build -d"
   },
   "keywords": [],
   "author": "",
