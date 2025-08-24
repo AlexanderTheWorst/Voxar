@@ -60,7 +60,7 @@ export function hasPermission(permissions, permission) {
 
 export async function whoami(access_token) {
     const cached = getCache(`user_${access_token}`);
-    if (cached) return cached;
+    if (cached) return cached
 
     try {
         const res = await fetch(`${base}/oauth2/@me`, {

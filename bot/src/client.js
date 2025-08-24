@@ -9,6 +9,7 @@ const __dirname = dirname(__filename);
 export const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent // If you need message content
     ],

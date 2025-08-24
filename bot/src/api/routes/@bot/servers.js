@@ -4,47 +4,55 @@ import { getGuilds } from "../../../lib/discord-api.js";
 export default async function routes(fastify) {
   // GET /@bot/servers/@me
   fastify.get('/servers', { preHandler: fastify.authenticate }, async (request, reply) => {
-    const { authorization } = request.headers;
-    if (!authorization) {
-      return reply.code(401).send({ error: 'Missing access token' });
+    const { user } = request.locals; // OAuth2-authenticated user
+    const userId = user.user.id;
+  
+    const results = [];
+    for (const [guildId, guild] of client.guilds.cache) {
+      try {
+        const member = await guild.members.fetch(userId);
+        results.push({
+          id: guild.id,
+          name: guild.name,
+          permissions: member.permissions.bitfield.toString()
+        });
+      } catch (err) {
+        return reply.code(404).send({ error: 'Member not part of guild.' });
+      }
     }
 
-    // Fetch bot guilds
-    const botGuildsCollection = await client.guilds.fetch();
-    const botGuilds = botGuildsCollection.map(g => ({
-      id: g.id.toString(),
-      name: g.name,
-      permissions: g.permissions.toString(), // serialize BigInt
-      features: g.features
-    }));
-
-    // Return safe data
-    return botGuilds;
-  });
+    return results;
+  });  
 
   // GET /@bot/servers/:server_id
   fastify.get('/servers/:server_id', { preHandler: fastify.authenticate }, async (request, reply) => {
     const { server_id } = request.params;
-    const { authorization } = request.headers;
+    const { user } = request.locals; // OAuth2-authenticated user
+    const userId = user.user.id;
 
-    const userGuilds = await getGuildsCached(authorization);
-    if (!userGuilds || !userGuilds.some(g => g.id === server_id)) {
-      return reply.code(404).send({ error: 'Resource unavailable' });
-    }
-
-    const botGuildsCollection = await client.guilds.fetch();
-    const guild = botGuildsCollection.map(g => ({
-      id: g.id.toString(),
-      name: g.name,
-      permissions: g.permissions.toString(),
-      features: g.features
-    })).find(g => g.id === server_id);
-
+    const guild = client.guilds.cache.find(g => g.id === server_id);
     if (!guild) {
       return reply.code(404).send({ error: 'Bot not part of guild.' });
     }
 
-    return guild;
+    let results;
+    try {
+      const member = await guild.members.fetch(userId);
+      results = {
+        name: guild.name,
+        id: guild.id,
+        ownerId: guild.ownerId,
+        "@me": {
+          permissions: member.permissions.bitfield.toString()
+        }
+      };
+    } catch (err) {
+      console.log(err);
+      return reply.code(404).send({ error: 'Member not part of guild.' });
+    }
+    console.log(results);
+
+    return results;
   });
 
   // POST /@bot/servers/:server_id/action

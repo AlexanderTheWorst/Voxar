@@ -4,6 +4,7 @@ import { whoami } from '../../lib/discord-api.js';
 async function authPlugin(fastify) {
     fastify.decorate('authenticate', async (request, reply) => {
         const token = request.headers['authorization'];
+        request.locals = { ...(request.locals ?? {}) };
 
         if (!token) {
             return reply.code(401).send({ error: 'Missing access_token' });
@@ -14,6 +15,8 @@ async function authPlugin(fastify) {
         if (!user) {
             return reply.code(401).send({ error: 'Invalid access_token' });
         }
+
+        request.locals.user = user;
     });
 }
 
