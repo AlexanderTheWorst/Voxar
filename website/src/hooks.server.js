@@ -2,13 +2,44 @@
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { createRequire } from 'module';
+import { redirect } from '@sveltejs/kit';
+import { findById, remove } from '$lib/prisma/models/session';
+import { whoami } from '$lib/discord-api';
 
-// Polyfill Node globals for SvelteKit SSR generated code
 globalThis.__dirname = dirname(fileURLToPath(import.meta.url));
 globalThis.__filename = fileURLToPath(import.meta.url);
 globalThis.require = createRequire(import.meta.url);
 
+const sessionLockedRoutes = ['/dashboard'];
+
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-    return resolve(event);
+	const { cookies, locals, url } = event;
+
+	// Always try to hydrate user/session if cookie exists
+	const session = cookies.get('session');
+	if (session) {
+		const authorizedUser = await findById(session);
+		if (authorizedUser) {
+			const user = await whoami(authorizedUser.access_token);
+			if (user) {
+				locals.user = user;
+				locals.session = session;
+			} else {
+				// token invalid; clear session
+				await remove(authorizedUser.access_token);
+				cookies.delete('session', { path: '/' });
+			}
+		} else {
+			cookies.delete('session', { path: '/' });
+		}
+	}
+
+	// Redirect if route is protected and not logged in
+	const needsAuth = sessionLockedRoutes.some((path) => url.pathname.startsWith(path));
+	if (needsAuth && !locals.user) {
+		throw redirect(307, '/auth/discord/login');
+	}
+
+	return resolve(event);
 }

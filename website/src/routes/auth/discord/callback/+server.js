@@ -6,7 +6,7 @@ import * as SessionModel from '$lib/prisma/models/session.js';
 export async function GET(event) {
     const { cookies, url } = event;
 
-    if (cookies.get('session')) throw redirect(307, '/');
+    if (cookies.get('session')) throw redirect(307, '/dashboard');
 
     const code = url.searchParams.get("code");
     if (!code) throw redirect(307, "/auth/discord/login");
@@ -33,5 +33,5 @@ export async function GET(event) {
         maxAge: 60 * 60 * 24 * 7
     });
 
-    throw redirect(307, '/');
+    throw redirect(307, '/dashboard');
 }

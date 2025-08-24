@@ -1,12 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import * as SessionModel from '$lib/prisma/models/session.js';
 
-export async function GET(event) {
-    const { cookies } = event;
+export async function GET({ cookies, locals }) {
+    const { session } = locals;
 
-    if (!cookies.get('session')) throw redirect(307, '/');
     try {
-        await SessionModel.remove(cookies.get('session'));
+        await SessionModel.remove(session);
     } catch(err) {
         console.warn(err);
     }

@@ -19,13 +19,16 @@ export async function GET({ params, cookies }) {
         })
     })
 
-    if (!guildResponse.ok) return new Response(
-        JSON.stringify({ error: guildResponse.text() }),
-        {
-            headers: new Headers({
-                "Content-Type": "application/json"
-            })
-        });
+    if (!guildResponse.ok) {
+        console.log(guildResponse)
+        return new Response(
+            JSON.stringify({ error: guildResponse.text() }),
+            {
+                headers: new Headers({
+                    "Content-Type": "application/json"
+                })
+            });
+    }
 
     return new Response(
         JSON.stringify(

@@ -149,7 +149,7 @@ export async function whoami(access_token) {
         setCache(`user_${access_token}`, json, 60_000);
         return json;
     } catch (err) {
-        console.warn(err);
+        console.warn(err.message);
         return null;
     }
 }
@@ -175,7 +175,7 @@ export async function getGuilds(access_token) {
         setCache(`guilds_${access_token}`, json, 30_000);
         return json;
     } catch (err) {
-        console.warn(err);
+        console.warn(err.message);
         return null;
     }
 }

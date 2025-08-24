@@ -42,9 +42,8 @@ export default async function routes(fastify) {
         name: guild.name,
         id: guild.id,
         ownerId: guild.ownerId,
-        "@me": {
-          permissions: member.permissions.bitfield.toString()
-        }
+        memberCount: guild.memberCount,
+        permissions: member.permissions.bitfield.toString()
       };
     } catch (err) {
       console.log(err);
