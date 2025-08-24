@@ -1,7 +1,7 @@
 import { tokenExchange, whoami as _whoami, getRedirectUri } from '$lib/discord-api';
 import { v4 as uuidv4 } from "uuid";
 import { redirect } from '@sveltejs/kit';
-import * as SessionModel from '$lib/prisma/models/session.js';
+import { findById, remove, create } from '$lib/server/models/session';
 
 export async function GET(event) {
     const { cookies, url } = event;
@@ -18,11 +18,10 @@ export async function GET(event) {
     const whoami = await _whoami(token.access_token);
     if (!whoami) throw redirect(307, "/auth/discord/login");
 
-    const session = await SessionModel.create({
+    const session = await create({
         id: uuidv4(),
         access_token: token.access_token,
         refresh_token: token.refresh_token,
-        userId: whoami.id // store Discord ID for later use
     });
 
     cookies.set('session', session.id, {

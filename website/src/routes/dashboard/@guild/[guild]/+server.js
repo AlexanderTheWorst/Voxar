@@ -1,4 +1,4 @@
-import * as SessionModel from "$lib/prisma/models/session.js";
+import { findById, remove } from "$lib/server/models/session";
 
 export async function GET({ params, cookies }) {
     let { guild } = params;
@@ -8,7 +8,7 @@ export async function GET({ params, cookies }) {
         return { user: null };
     }
 
-    const session = await SessionModel.findById(sessionId);
+    const session = await findById(sessionId);
     if (!session) {
         return { user: null };
     }

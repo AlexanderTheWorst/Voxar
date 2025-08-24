@@ -3,18 +3,22 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "private": true,
   "scripts": {
-		"install:all": "git pull && npm i && cd website && npm i && cd ../ && cd bot && npm i",
+    "install:all": "git pull && npm i && cd website && npm i && cd ../ && cd bot && npm i",
     "compose": "sudo docker compose -v && sudo docker compose up --build -d"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "prisma": "^6.14.0"
-  },
+  "type": "module",
+  "workspaces": [
+    "website",
+    "bot",
+    "mongodb"
+  ],
   "dependencies": {
-    "@prisma/client": "^6.14.0"
+    "dotenv": "^17.2.1",
+    "dotenv-cli": "^10.0.0"
   }
 }

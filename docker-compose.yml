@@ -7,15 +7,17 @@ services:
     #   - "80:80"
     #   - "443:443"
     volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile   # your config
-      - ./caddy/caddy_data:/data                 # SSL certs & state
-      - ./caddy/caddy_config:/config             # runtime config
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile # your config
+      - ./caddy/caddy_data:/data # SSL certs & state
+      - ./caddy/caddy_config:/config # runtime config
     restart: unless-stopped
     networks:
       - shared
 
   website:
-    image: node:alpine3.22
+    build:
+      context: .
+      dockerfile: Dockerfile.website
     container_name: website
     working_dir: /app
     env_file:
@@ -23,10 +25,6 @@ services:
     environment:
       DOCKER: true
       DOCKER_NAME: "@voxar/website"
-    volumes:
-      - ./website:/app
-      - ./prisma:/prisma
-    command: sh -c "npm run start"
     restart: unless-stopped
     networks:
       - shared
@@ -34,9 +32,11 @@ services:
       - bot
     ports:
       - "3000:3000"
-  
+
   bot:
-    image: node:alpine3.22
+    build:
+      context: .
+      dockerfile: Dockerfile.bot
     container_name: bot
     working_dir: /app
     env_file:
@@ -44,16 +44,9 @@ services:
     environment:
       DOCKER: true
       DOCKER_NAME: "@voxar/bot"
-    volumes:
-      - ./bot:/app
-      - ./prisma:/prisma
-    command: sh -c "npm run start"
     restart: unless-stopped
     networks:
       - shared
-
-volumes:
-  db_data:
 
 networks:
   shared:

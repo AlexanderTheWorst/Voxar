@@ -1,0 +1,27 @@
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+COPY .env /.env
+
+# Copy manifests
+COPY package*.json ./
+COPY mongodb/package*.json ./mongodb/
+COPY website/package*.json ./website/
+
+RUN npm install
+
+# Copy code
+COPY mongodb ./mongodb
+COPY website ./website
+
+# Build SvelteKit
+WORKDIR /app/website
+RUN npx dotenv -e /.env -- npm run build
+
+# Final image
+FROM node:22-alpine
+WORKDIR /app
+COPY --from=builder /app/website ./
+COPY --from=builder /app/node_modules ./node_modules
+ENV NODE_ENV=production
+CMD ["node", "build"]

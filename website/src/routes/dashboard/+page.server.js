@@ -1,11 +1,11 @@
 import { whoami, getGuilds, hasPermission, DiscordPermissions } from '$lib/discord-api.js';
-import * as SessionModel from "$lib/prisma/models/session.js";
+import { findById, remove, create } from "$lib/server/models/session";
 import { isRedirect } from '@sveltejs/kit';
 
 export async function load({ cookies, locals }) {
   const { user, session } = locals;
 
-  const authorizedUser = await SessionModel.findById(session); // I already know it exists otherwise it wouldn't pass through.
+  const authorizedUser = await findById(session); // I already know it exists otherwise it wouldn't pass through.
 
   // Fetch Discord user info and guilds with access token
   let guilds = await getGuilds(authorizedUser.access_token);

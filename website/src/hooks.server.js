@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { createRequire } from 'module';
 import { redirect } from '@sveltejs/kit';
-import { findById, remove } from '$lib/prisma/models/session';
+import { findById, remove } from "$lib/server/models/session";
 import { whoami } from '$lib/discord-api';
 
 globalThis.__dirname = dirname(fileURLToPath(import.meta.url));
