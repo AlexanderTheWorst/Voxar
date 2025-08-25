@@ -1,4 +1,4 @@
-import { findById, remove } from "$lib/server/models/session";
+import { findById, remove } from "@voxar/mongodb/models/session";
 
 export async function GET({ params, cookies }) {
     let { guild } = params;
@@ -20,7 +20,6 @@ export async function GET({ params, cookies }) {
     })
 
     if (!guildResponse.ok) {
-        console.log(guildResponse)
         return new Response(
             JSON.stringify({ error: guildResponse.text() }),
             {

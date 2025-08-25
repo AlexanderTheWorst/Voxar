@@ -1,45 +1,32 @@
 // src/hooks.server.js
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { createRequire } from 'module';
-import { redirect } from '@sveltejs/kit';
-import { findById, remove } from "$lib/server/models/session";
+import { error, redirect } from '@sveltejs/kit';
 import { whoami } from '$lib/discord-api';
+import * as SessionModel from "@voxar/mongodb/models/session";
+import * as UserModel from "@voxar/mongodb/models/user";
 
-globalThis.__dirname = dirname(fileURLToPath(import.meta.url));
-globalThis.__filename = fileURLToPath(import.meta.url);
-globalThis.require = createRequire(import.meta.url);
-
-console.log("TEST!");
-
-const sessionLockedRoutes = ['/dashboard'];
+const sessionLockedRoutes = ['/dashboard', '/auth/roblox'];
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const { cookies, locals, url } = event;
 
-	// return new Response(new URLSearchParams({
-	// 	protocol: url.protocol,
-	// 	port: url.port,
-	// 	hostname: url.hostname
-	// }), {
-	// 	headers: new Headers({
-	// 		"Content-Type": "application/json"
-	// 	})
-	// });
-
 	// Always try to hydrate user/session if cookie exists
 	const session = cookies.get('session');
 	if (session) {
-		const authorizedUser = await findById(session);
+		const authorizedUser = await SessionModel.findById(session);
 		if (authorizedUser) {
 			const user = await whoami(authorizedUser.access_token);
 			if (user) {
 				locals.user = user;
 				locals.session = session;
+
+				let userData = await UserModel.findById(user.user.id);
+				if (!userData) userData = await UserModel.create({ id: user.user.id });
+				locals.user_data = userData;
+				console.log(user.user.id);
 			} else {
 				// token invalid; clear session
-				await remove(authorizedUser.access_token);
+				await SessionModel.remove(authorizedUser.access_token);
 				cookies.delete('session', { path: '/' });
 			}
 		} else {

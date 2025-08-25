@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { findById, remove } from '$lib/server/models/session';
+import { findById, remove } from '@voxar/mongodb/models/session';
 
 export async function GET({ cookies, locals }) {
     const { session } = locals;

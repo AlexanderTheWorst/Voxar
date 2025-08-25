@@ -6,6 +6,8 @@ export default async function routes(fastify) {
   fastify.get('/servers', { preHandler: fastify.authenticate }, async (request, reply) => {
     const { user } = request.locals; // OAuth2-authenticated user
     const userId = user.user.id;
+
+    // console.log(request.locals, userId);
   
     const results = [];
     for (const [guildId, guild] of client.guilds.cache) {
@@ -17,9 +19,12 @@ export default async function routes(fastify) {
           permissions: member.permissions.bitfield.toString()
         });
       } catch (err) {
-        return reply.code(404).send({ error: 'Member not part of guild.' });
+        // console.log(err);
+        // return reply.code(404).send({ error: 'Member not part of guild.' });
       }
     }
+
+    // console.log(results);
 
     return results;
   });  

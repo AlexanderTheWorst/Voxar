@@ -1,9 +1,9 @@
 import { whoami, getGuilds, hasPermission, DiscordPermissions } from '$lib/discord-api.js';
-import { findById, remove, create } from "$lib/server/models/session";
+import { findById, remove, create } from "@voxar/mongodb/models/session";
 import { isRedirect } from '@sveltejs/kit';
 
 export async function load({ cookies, locals }) {
-  const { user, session } = locals;
+  const { user, session, user_data } = locals;
 
   const authorizedUser = await findById(session); // I already know it exists otherwise it wouldn't pass through.
 
@@ -22,9 +22,18 @@ export async function load({ cookies, locals }) {
   if (!response.ok) console.warn(await response.text()); // optional debugging
   else mutuals = await response.json();
 
+  const safeUserData = user_data ? user_data.toObject() : null;
+
   // Expose only safe user fields to frontend
   return {
     user: user.user,
+    user_data: {
+      id: safeUserData.id,
+      linkedAccounts: safeUserData.linkedAccounts.map(g => ({
+        id: g.id,
+        username: g.username
+      }))
+    },
     guilds,
     mutuals: (mutuals ?? [])
   };

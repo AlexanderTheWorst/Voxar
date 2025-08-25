@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 
 const {
-    DISCORD_OAUTH2_CLIENT_ID: client_id = undefined
+    DISCORD_CLIENT_ID: client_id = undefined
 } = process.env;
 
 export async function GET({ params, url }) {

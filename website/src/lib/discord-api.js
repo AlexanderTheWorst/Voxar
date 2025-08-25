@@ -3,10 +3,8 @@ import { getCache, setCache } from "./cache";
 const base = 'https://discord.com/api/v10';
 
 const {
-    DISCORD_OAUTH2_CLIENT_ID: client_id = undefined,
-    DISCORD_OAUTH2_CLIENT_SECRET: client_secret = undefined,
-    DISCORD_OAUTH2_REDIRECT_URI: redirect_uri = undefined,
-    DISCORD_OAUTH2_REDIRECT_URI_DEV: redirect_uri_dev = undefined,
+    DISCORD_CLIENT_ID: client_id = undefined,
+    DISCORD_CLIENT_SECRET: client_secret = undefined
 } = process.env;
 
 export const DiscordPermissions = {
@@ -63,16 +61,20 @@ export const DiscordPermissions = {
 
 export function getRedirectUri(request) {
     const { hostname, origin, port, protocol } = request.url;
-    // return (["localhost", "127.0.0.1"]).includes(hostname) ? redirect_uri_dev : redirect_uri;
     return `${["localhost", "127.0.0.1"].includes(hostname) ? "http" : "https"}://${hostname}${port ? `:${port}` : ``}/auth/discord/callback`;
 }
 
 export function getOAuth2Link(request) {
     let redirect_uri = getRedirectUri(request);
 
-    return (`
-        https://discord.com/oauth2/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=identify+guilds
-    `).trim();
+    const searchParams = new URLSearchParams({
+        client_id,
+        redirect_uri,
+        response_type: "code",
+        scope: "identify guilds"
+    });
+
+    return `https://discord.com/oauth2/authorize?${searchParams.toString()}`;
 }
 
 export function hasPermission(permissions, permission) {
@@ -168,7 +170,6 @@ export async function getGuilds(access_token) {
         });
 
         if (!res.ok) {
-            console.log(res.text());
             return null;
         }
 

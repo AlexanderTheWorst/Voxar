@@ -1,12 +1,13 @@
 import { tokenExchange, whoami as _whoami, getRedirectUri } from '$lib/discord-api';
 import { v4 as uuidv4 } from "uuid";
 import { redirect } from '@sveltejs/kit';
-import { findById, remove, create } from '$lib/server/models/session';
+import * as SessionModel from '@voxar/mongodb/models/session';
+import * as UserModel from '@voxar/mongodb/models/user';
 
 export async function GET(event) {
-    const { cookies, url } = event;
+    const { locals, url, cookies } = event;
 
-    if (cookies.get('session')) throw redirect(307, '/dashboard');
+    if (locals.session) throw redirect(307, '/dashboard');
 
     const code = url.searchParams.get("code");
     if (!code) throw redirect(307, "/auth/discord/login");
@@ -18,10 +19,12 @@ export async function GET(event) {
     const whoami = await _whoami(token.access_token);
     if (!whoami) throw redirect(307, "/auth/discord/login");
 
-    const session = await create({
+    const session = await SessionModel.create({
         id: uuidv4(),
+        discord_user: whoami.user.id,
         access_token: token.access_token,
         refresh_token: token.refresh_token,
+        valid_until: new Date(Date.now() + token.expires_in * 1000)
     });
 
     cookies.set('session', session.id, {
