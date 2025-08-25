@@ -21,8 +21,7 @@ export async function handle({ event, resolve }) {
 	// return new Response(new URLSearchParams({
 	// 	protocol: url.protocol,
 	// 	port: url.port,
-	// 	hostname: url.hostname,
-	// 	https: url.
+	// 	hostname: url.hostname
 	// }), {
 	// 	headers: new Headers({
 	// 		"Content-Type": "application/json"

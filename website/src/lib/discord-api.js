@@ -64,7 +64,7 @@ export const DiscordPermissions = {
 export function getRedirectUri(request) {
     const { hostname, origin, port, protocol } = request.url;
     // return (["localhost", "127.0.0.1"]).includes(hostname) ? redirect_uri_dev : redirect_uri;
-    return `${["localhost", "127.0.0.1"].includes(hostname) ? "http" : "https"}://${hostname}:${port}/auth/discord/callback`;
+    return `${["localhost", "127.0.0.1"].includes(hostname) ? "http" : "https"}://${hostname}${port ? `:${port}` : ``}/auth/discord/callback`;
 }
 
 export function getOAuth2Link(request) {
