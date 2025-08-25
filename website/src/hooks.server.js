@@ -10,11 +10,24 @@ globalThis.__dirname = dirname(fileURLToPath(import.meta.url));
 globalThis.__filename = fileURLToPath(import.meta.url);
 globalThis.require = createRequire(import.meta.url);
 
+console.log("TEST!");
+
 const sessionLockedRoutes = ['/dashboard'];
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	const { cookies, locals, url } = event;
+
+	// return new Response(new URLSearchParams({
+	// 	protocol: url.protocol,
+	// 	port: url.port,
+	// 	hostname: url.hostname,
+	// 	https: url.
+	// }), {
+	// 	headers: new Headers({
+	// 		"Content-Type": "application/json"
+	// 	})
+	// });
 
 	// Always try to hydrate user/session if cookie exists
 	const session = cookies.get('session');

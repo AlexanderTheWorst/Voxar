@@ -7,7 +7,8 @@ config({ path: '../.env', quiet: true, override: false }); // Load .env
 
 export default defineConfig({
 	server: {
-		host: '0.0.0.0'
+		host: '0.0.0.0',
+		https: false
 	},
 	plugins: [tailwindcss(), sveltekit()],
 });
