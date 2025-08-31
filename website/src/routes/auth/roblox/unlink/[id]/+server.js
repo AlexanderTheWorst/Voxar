@@ -6,9 +6,19 @@ export async function GET({ locals, params }) {
     const { id } = params;
 
     const robloxUser = user_data.linkedAccounts.find(a => a.id === id);
-    if (!robloxUser) throw redirect(307, "/dashboard");
+    if (!robloxUser) return new Response(null, {
+        status: 404
+    })
 
-    await UserModel.removeRobloxUser(user_data.id, robloxUser);
+    try {
+        UserModel.removeRobloxUser(user_data.id, robloxUser);
+    } catch (err) {
+        return new Response(null, {
+            status: 404
+        })
+    }
 
-    throw redirect(307, "/dashboard");
+    return new Response(null, {
+        status: 200
+    })
 }

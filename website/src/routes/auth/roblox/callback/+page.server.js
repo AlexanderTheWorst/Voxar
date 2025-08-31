@@ -61,27 +61,27 @@ async function whoami(token) {
     return await res.json();
 }
 
-export async function GET({ url, locals }) {
+export async function load({ url, locals }) {
+    console.log(url);
+
     const { searchParams } = url;
     const { user } = locals;
 
     const code = searchParams.get("code");
     const state = searchParams.get("state");
 
+    const error = searchParams.get("error");
+    const error_description = searchParams.get("error_description");
+
+    if (error || error_description) return { error, error_description };
+
     const token = await tokenExchange(code);
 
-    if (!token) return new Response(
-        JSON.stringify({
-            error: "Invalid authorization code."
-        }),
-        {
-            headers: new Headers({
-                "Content-Type": "application/json"
-            })
-        }
-    )
+    if (!token) return { error: "request_error", error_description: "Token exchange failed." }
 
     const robloxUser = await whoami(token.access_token);
+
+    if (!robloxUser) return { error: "token_error", error_description: "Request failed when trying to access user information." }
 
     await UserModel.linkRobloxUser(user.user.id, {
         id: robloxUser.sub,
@@ -91,5 +91,8 @@ export async function GET({ url, locals }) {
         valid_until: new Date(Date.now() + token.expires_in * 1000)
     });
 
-    throw redirect(307, "/dashboard");
+    return {
+        id: robloxUser.sub,
+        user: robloxUser
+    }
 }

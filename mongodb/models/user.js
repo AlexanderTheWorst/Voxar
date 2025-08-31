@@ -1,5 +1,5 @@
 import mongoose, { model, Schema } from "mongoose";
-import mongodb from "../index";
+// import mongodb from "../index";
 
 const UserSchema = Schema({
     id: {

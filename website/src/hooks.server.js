@@ -22,8 +22,14 @@ export async function handle({ event, resolve }) {
 
 				let userData = await UserModel.findById(user.user.id);
 				if (!userData) userData = await UserModel.create({ id: user.user.id });
-				locals.user_data = userData;
-				console.log(user.user.id);
+				let safeUserData = userData.toObject();
+				locals.user_data = {
+					id: safeUserData.id,
+					linkedAccounts: safeUserData.linkedAccounts.map(g => ({
+						id: g.id,
+						username: g.username
+					}))
+				};
 			} else {
 				// token invalid; clear session
 				await SessionModel.remove(authorizedUser.access_token);

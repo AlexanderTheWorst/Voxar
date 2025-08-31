@@ -5,6 +5,9 @@ import { config } from 'dotenv';
 
 config({ path: '../.env', quiet: true, override: false }); // Load .env
 
+import { connectDB } from '@voxar/mongodb';
+connectDB();
+
 export default defineConfig({
 	server: {
 		host: '0.0.0.0',

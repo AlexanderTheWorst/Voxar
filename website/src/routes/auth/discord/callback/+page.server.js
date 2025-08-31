@@ -1,23 +1,22 @@
 import { tokenExchange, whoami as _whoami, getRedirectUri } from '$lib/discord-api';
 import { v4 as uuidv4 } from "uuid";
-import { redirect } from '@sveltejs/kit';
 import * as SessionModel from '@voxar/mongodb/models/session';
 import * as UserModel from '@voxar/mongodb/models/user';
 
-export async function GET(event) {
+export async function load(event) {
     const { locals, url, cookies } = event;
 
-    if (locals.session) throw redirect(307, '/dashboard');
+    if (locals.session) return { error: "user_error", error_description: "Already logged in." }
 
     const code = url.searchParams.get("code");
-    if (!code) throw redirect(307, "/auth/discord/login");
+    if (!code) return { error: "oauth2_error", error_description: "Discord did not provide a token." }
 
     const redirectUri = getRedirectUri(event);
     const token = await tokenExchange(code, redirectUri);
-    if (!token?.access_token) throw redirect(307, "/auth/discord/login");
+    if (!token?.access_token) return { error: "request_error", error_description: "Token exchange failed." }
 
     const whoami = await _whoami(token.access_token);
-    if (!whoami) throw redirect(307, "/auth/discord/login");
+    if (!whoami) return { error: "token_error", error_description: "Request failed when trying to access user information." }
 
     const session = await SessionModel.create({
         id: uuidv4(),
@@ -27,6 +26,12 @@ export async function GET(event) {
         valid_until: new Date(Date.now() + token.expires_in * 1000)
     });
 
+    const user_data = (await UserModel.findById(whoami.user.id)) ?? (await UserModel.create({
+        id: whoami.user.id
+    }));
+
+    const safeUserData = user_data.toObject();
+
     cookies.set('session', session.id, {
         httpOnly: true,
         sameSite: 'lax',
@@ -35,5 +40,15 @@ export async function GET(event) {
         maxAge: 60 * 60 * 24 * 7
     });
 
-    throw redirect(307, '/dashboard');
+    return {
+        user: whoami.user,
+        session_id: session.id,
+        user_data: {
+            id: safeUserData.id,
+            linkedAccounts: safeUserData.linkedAccounts.map(rA => ({
+                id: rA.id,
+                username: rA.username
+            }))
+        }
+    };
 }

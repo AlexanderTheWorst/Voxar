@@ -1,16 +1,15 @@
 <script>
-    import { preloadCode, preloadData } from "$app/navigation";
-    import Sidebar from "$lib/components/core/Sidebar.svelte";
-    import UserSidebar from "$lib/components/core/UserSidebar.svelte";
+    import GuildSidebar from "$lib/components/core/GuildSidebar.svelte";
     import Loader from "$lib/components/helper/Loader.svelte";
     import { onMount } from "svelte";
     import { writable } from "svelte/store";
 
-    export let data;
+    export let data = writable(null);
     data = writable(data);
-    const { user, user_data, guilds } = $data;
 
-    let out = writable("servers");
+    const { guild } = $data;
+
+    let out = writable("overview");
     let currentPage = writable(null);
 
     const pages = import.meta.glob("./pages/*.svelte");
@@ -29,6 +28,7 @@
                     .replace(".svelte", "")
                     .toLowerCase(),
                 component: module.default,
+                data: module.data
             };
         });
 
@@ -36,26 +36,18 @@
     });
 </script>
 
-<main class="flex flex-row min-h-screen">
-    <UserSidebar {data} {out} />
+<main class="flex flex-row">
+    <GuildSidebar {data} {out} />
 
-    <div
-        class="flex flex-col flex-1 gap-[10px] h-screen p-[96px] overflow-y-scroll"
-    >
-        <!-- <div class="loader"></div>  -->
-
+    <div class="flex-1 relative h-screen p-[96px] overflow-y-scroll">
         {#if $currentPage}
-            <svelte:component this={$currentPage} {data} {out} />
+            <svelte:component this={$currentPage} {loadedPages} {data} {out} />
         {:else}
             <div
-                class="h-full w-full relative flex items-center justify-center"
+                class="w-full h-full relative flex items-center justify-center"
             >
                 <Loader />
             </div>
         {/if}
-
-        <!-- 
-            
-        -->
     </div>
 </main>

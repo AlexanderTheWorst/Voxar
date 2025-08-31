@@ -6,7 +6,8 @@
   "private": true,
   "scripts": {
     "install:all": "git pull && npm i && cd website && npm i && cd ../ && cd bot && npm i",
-    "compose": "sudo docker compose -v && sudo docker compose up --build -d"
+    "compose": "sudo docker compose -v && sudo docker compose up --build -d",
+    "dev": "concurrently --raw \"npm run dev --workspace=@voxar/website\" \"npm run dev --workspace=@voxar/bot\""
   },
   "keywords": [],
   "author": "",
