@@ -4,9 +4,9 @@
 
 <script>
     import CheckmarkIcon from "$lib/components/svgs/checkmark_icon.svelte";
-    import PuzzleIcon from "$lib/components/svgs/puzzle_icon.svelte";
+    import ExtensionIcon from "$lib/components/svgs/extension_icon.svelte";
 
-    import { onMount } from "svelte";
+    import { getContext, onMount } from "svelte";
 
     import { writable } from "svelte/store";
     import Commands from "./commands.svelte";
@@ -16,11 +16,10 @@
     import HistoryIcon from "$lib/components/svgs/history_icon.svelte";
     import GroupIcon from "$lib/components/svgs/group_icon.svelte";
 
-    export let data = writable(null);
-    export let out = writable(null);
-    export let loadedPages = [];
+    let { data, modules, out, loadedPages } = getContext("globals");
+    console.log(loadedPages);
 
-    loadedPages = loadedPages
+    $: widgets = $loadedPages
         .filter((p) => p.data.widget)
         .map((p) => ({ ...p.data.widget, component: p.component, page_name: p.name }));
 </script>
@@ -71,7 +70,7 @@
         <div class="custom-grid h-fit w-full gap-[24px]">
             <!-- Widgets -->
             <div class="flex flex-col gap-[24px]">
-                {#each loadedPages as widget}
+                {#each widgets as widget}
                     <div
                         on:click={() => $out = widget.page_name}
                         role="button"
@@ -84,8 +83,7 @@
                         >
                             <svelte:component
                                 this={widget.component}
-                                {data}
-                                widget={true}
+                                widget
                             />
                         </div>
                         <div

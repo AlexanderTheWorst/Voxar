@@ -7,13 +7,13 @@
     import DashboardIcon from "$lib/components/svgs/dashboard_icon.svelte";
     import GroupIcon from "$lib/components/svgs/group_icon.svelte";
     import KeyboardIcon from "$lib/components/svgs/keyboard_icon.svelte";
-    import PuzzleIcon from "$lib/components/svgs/puzzle_icon.svelte";
+    import ExtensionIcon from "$lib/components/svgs/extension_icon.svelte";
     import SortIcon from "$lib/components/svgs/sort_icon.svelte";
     import { writable } from "svelte/store";
     import SettingsIcon from "../svgs/settings_icon.svelte";
+    import { getContext } from "svelte";
 
-    export let data = null;
-    export let out = writable(null);
+    let { data, out } = getContext("globals");
 
     const { guild, user } = data;
 </script>

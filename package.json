@@ -16,7 +16,8 @@
   "workspaces": [
     "website",
     "bot",
-    "mongodb"
+    "mongodb",
+    "shared"
   ],
   "dependencies": {
     "dotenv": "^17.2.1",

@@ -20,6 +20,7 @@
 	},
 	"dependencies": {
 		"@voxar/mongodb": "*",
+		"@voxar/shared": "*",
 		"dotenv": "^17.2.1",
 		"uuid": "^11.1.0"
 	}

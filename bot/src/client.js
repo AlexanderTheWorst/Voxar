@@ -11,10 +11,13 @@ export const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent // If you need message content
+        GatewayIntentBits.MessageContent
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction]
 });
+
+// Prepare for locals.
+client.locals = {};
 
 const eventsFolder = resolve(__dirname, "events");
 const events = {};
@@ -33,9 +36,9 @@ for (let event in Events) {
         let { data, execute } = eventHandler;
         if (!execute) throw new Error(`${event} is missing a proper 'execute' function.`)
         if (data?.once ?? false) {
-            client.once(Events[event], (...args) => execute(...args));
+            client.once(Events[event], (...args) => execute(...args, client));
         } else {
-            client.on(Events[event], (...args) => execute(...args));
+            client.on(Events[event], (...args) => execute(...args, client));
         }
     }
 }

@@ -6,7 +6,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "nodemon .",
+    "dev": "nodemon --watch . --watch ../shared --watch ../mongodb --exec \"node .\"",
     "start": "node ."
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "fastify-plugin": "^5.0.1"
   },
   "dependencies": {
-    "@voxar/mongodb": "*"
+		"@voxar/mongodb": "*",
+		"@voxar/shared": "*"
   }
 }

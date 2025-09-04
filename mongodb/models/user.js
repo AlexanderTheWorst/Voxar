@@ -18,7 +18,7 @@ const UserSchema = Schema({
     ]
 }, { timestamps: true })
 
-const UserModel = mongoose.models.User || model("User", UserSchema);
+export const UserModel = mongoose.models.User || model("User", UserSchema);
 
 export async function create(data) {
     const user = new UserModel(data);

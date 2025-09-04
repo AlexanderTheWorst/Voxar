@@ -12,7 +12,7 @@ const SessionSchema = Schema({
     valid_until: Date
 })
 
-const SessionModel = mongoose.models.Session || model("Session", SessionSchema);
+export const SessionModel = mongoose.models.Session || model("Session", SessionSchema);
 
 export async function create(data) {
     return await SessionModel.create(data);

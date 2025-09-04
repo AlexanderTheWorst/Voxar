@@ -13,5 +13,14 @@ export default defineConfig({
 		host: '0.0.0.0',
 		https: false
 	},
+	optimizeDeps: {
+		include: ['@voxar/shared'] // force Vite to pre-bundle
+	},
+	ssr: {
+		noExternal: ['@voxar/shared'] // ensures it's treated as internal for SSR
+	},
+	fs: {
+		allow: ['..'] // or specifically ['../shared']
+	},
 	plugins: [tailwindcss(), sveltekit()],
 });

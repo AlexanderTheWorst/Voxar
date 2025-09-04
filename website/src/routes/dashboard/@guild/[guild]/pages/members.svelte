@@ -12,12 +12,17 @@
 <script>
     import GroupIcon from "$lib/components/svgs/group_icon.svelte";
     import PersonAlertIcon from "$lib/components/svgs/person_alert_icon.svelte";
+    import { getContext } from "svelte";
     import { writable } from "svelte/store";
 
-    export let data = writable(null);
+    let { data, modules, out, loadedPages } = getContext("globals");
+
     export let widget = false;
 
     let { guild } = $data;
+    let { members } = guild;
+
+    console.log(members);
 </script>
 
 {#if widget}
@@ -65,4 +70,8 @@
             <p class="text-white/50 text-[18px]/[22px]">Unverified</p>
         </div>
     </div>
+{:else}
+    {#each members as member} 
+        <p>{member.id} : {member.username}</p>
+    {/each}
 {/if}

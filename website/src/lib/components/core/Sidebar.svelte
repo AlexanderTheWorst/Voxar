@@ -5,7 +5,7 @@
     import AssignmentIcon from "$lib/components/svgs/assignment_icon.svelte";
     import KeyboardIcon from "$lib/components/svgs/keyboard_icon.svelte";
     import SortIcon from "$lib/components/svgs/sort_icon.svelte";
-    import PuzzleIcon from "$lib/components/svgs/puzzle_icon.svelte";
+    import ExtensionIcon from "$lib/components/svgs/extension_icon.svelte";
     import ArrowLeftIcon from "$lib/components/svgs/arrow_left_icon.svelte";
     import LogoutIcon from "$lib/components/svgs/logout_icon.svelte";
 

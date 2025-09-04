@@ -1,9 +1,9 @@
 <script>
     import Loader from "$lib/components/helper/Loader.svelte";
-    import { onMount } from "svelte";
+    import { getContext, onMount } from "svelte";
     import { writable } from "svelte/store";
 
-    export let data = writable(null);
+    let { data, out } = getContext("globals");
 
     let { user, user_data } = $data;
 
