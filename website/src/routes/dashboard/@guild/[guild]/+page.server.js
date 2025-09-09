@@ -3,6 +3,8 @@ import { findById } from "@voxar/mongodb/models/session";
 import GuildModel from "@voxar/mongodb/models/guild"
 import { ModuleManager } from "@voxar/shared";
 
+let botURI = `http://${process.env.NODE_ENV == "production" ? "bot:3000" : "localhost:3000"}`;
+
 export async function load({ params, locals, cookies, route }) {
     let { guild } = params;
     let { user, user_data, session: sessionId = undefined } = locals;
@@ -12,7 +14,7 @@ export async function load({ params, locals, cookies, route }) {
         return { user: null };
     }
 
-    const guildResponse = await fetch(`http://${process.env.NODE_ENV == "production" ? "bot:3000" : "localhost:3000"}/@bot/servers/${guild}`, {
+    const guildResponse = await fetch(`${botURI}/@bot/servers/${guild}`, {
         headers: new Headers({
             "Authorization": session.access_token
         })

@@ -41,7 +41,7 @@
 </script>
 
 <div
-    class="flex flex-col w-full p-[24px] border-[#373737] border-2 rounded-[8px]"
+    class="flex flex-col w-full p-[24px] border-[#373737] bg-primary-bg border-2 rounded-[8px]"
 >
     <!-- Details -->
     <div

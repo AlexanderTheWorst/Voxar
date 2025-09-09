@@ -1,11 +1,13 @@
-import { client } from "../../../client.js";
 import { DiscordPermissions, getGuilds, hasPermission } from "../../../lib/discord-api.js";
+import shared from "@voxar/bot";
 
 export default async function routes(fastify) {
   // GET /@bot/servers/@me
   fastify.get('/servers', { preHandler: fastify.authenticate }, async (request, reply) => {
     const { user } = request.locals; // OAuth2-authenticated user
     const userId = user.user.id;
+
+    const client = shared.client;
 
     const results = [];
     for (const [guildId, guild] of client.guilds.cache) {
@@ -31,22 +33,34 @@ export default async function routes(fastify) {
     const { user } = request.locals; // OAuth2-authenticated user
     const userId = user.user.id;
 
+    const client = shared.client;
+
     const guild = client.guilds.cache.find(g => g.id === server_id);
     if (!guild) {
       return reply.code(404).send({ error: 'Bot not part of guild.' });
     }
 
-    let results;
-    try {
-      const member = await guild.members.fetch(userId);
-      if (!hasPermission(member.permissions, DiscordPermissions.MANAGE_GUILD)) throw new Error("Invalid permissions");
-      
-      results = {
-        name: guild.name,
-        id: guild.id,
-        ownerId: guild.ownerId,
+    guild.members.fetch();
+    guild.channels.fetch();
+    guild.roles.fetch();
+
+    const member = await guild.members.fetch(userId);
+    if (!member) return reply.status(404).send("Member not part of guild.");
+
+    let publicData = {
+      name: guild.name,
+      id: guild.id,
+      permissions: member.permissions.bitfield.toString(),
+      icon: guild.icon,
+      banner: guild.banner
+    }
+
+    if (hasPermission(member.permissions, DiscordPermissions.MANAGE_GUILD))
+      return {
+        ...publicData,
+        
         memberCount: guild.members.cache.filter(m => !m.user.bot).size,
-        permissions: member.permissions.bitfield.toString(),
+        ownerId: guild.ownerId,
 
         members: guild.members.cache.filter((m) => !m.user.bot).map(m => ({ id: m.user.id, username: m.user.username })),
         roles: guild.roles.cache.filter(r => r.name !== "@everyone" && r.name !== "@here" && !r.managed).map(r => ({
@@ -62,14 +76,9 @@ export default async function routes(fastify) {
           name: c.name,
           id: c.id
         }))
-      };
-    } catch (err) {
-      console.log(err);
-      return reply.code(404).send({ error: 'Member not part of guild.' });
-    }
-    // console.log(results);
-
-    return results;
+      }
+    else
+      return
   });
 
   // POST /@bot/servers/:server_id/action

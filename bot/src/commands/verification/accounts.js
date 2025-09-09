@@ -3,15 +3,11 @@
  * @typedef {import("discord.js").Interaction} Interaction
  */
 
-import shared from "@voxar/bot";
-
 import { ApplicationCommandOptionType, MessageFlags, SlashCommandBuilder } from "discord.js"
 
-let websiteURI = `${process.env.NODE_ENV == "production" ? "https://voxar.lol" : "http://localhost:5173"}`;
-
 export const data = {
-    name: "verify",
-    description: "Start the verifying process.",
+    name: "accounts",
+    description: "Get all your accounts",
     aliases: [],
     options: []
 }
@@ -52,24 +48,11 @@ export const jsonify = () => {
  * @param {Interaction} interaction 
  * @param {Client} client 
  */
-export const execute = async (interaction, client) => {
-    let { guildId, user } = interaction;
-    let { id: userId = undefined } = user;
-    let { server: REST = undefined } = shared;
-
-    let sessionData = REST.startVerificationSession({
-        guildId,
-        userId
-    });
-
-    console.log(sessionData);
-
-    if (!sessionData) return interaction.reply({
-        content: "Error creating session."
-    });
+export const execute = (interaction, client) => {
+    let { UserCache } = client.locals;
+    let { id } = interaction.user;
 
     interaction.reply({
-        content: `${websiteURI}/verify/${sessionData.sessionId}`,
-        flags: MessageFlags.Ephemeral
+        content: UserCache.get(id)?.linkedAccounts.map(a => `${a.username}`).join(", ") || "No accounts!"
     });
 }

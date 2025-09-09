@@ -54,7 +54,7 @@ export async function removeRobloxUser(id, roblox) {
 }
 
 export async function findById(id) {
-    return await UserModel.findOne({ id: id }).exec();
+    return await UserModel.findOne({ id: id }).lean().exec();
 }
 
 export async function remove(id) {

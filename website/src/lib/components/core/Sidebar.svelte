@@ -36,7 +36,7 @@
             </SidebarCategoryItem>
         </div>
         <div
-            class="flex flex-row gap-[18px] min-w-[100%] items-center justify-center w-fit max-w-full h-fit relative px-[24px] py-[18px] overflow-hidden rounded-full border-2 border-primary-accent/50"
+            class="flex bg-primary-bg flex-row gap-[18px] min-w-[100%] items-center justify-center w-fit max-w-full h-fit relative px-[24px] py-[18px] overflow-hidden rounded-full border-2 border-primary-accent/50"
         >
             <div
                 class="absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle_at_top_left,_#7289DABF,_#7289DA40)] opacity-[45%]"

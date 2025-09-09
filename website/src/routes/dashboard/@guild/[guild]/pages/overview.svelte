@@ -49,7 +49,7 @@
             </div>
             <!-- Input -->
             <div
-                class="w-full border-2 border-[#373737] p-[18px] overflow-hidden rounded-[8px]"
+                class="w-full border-2 border-[#373737] p-[18px] overflow-hidden rounded-[8px] bg-primary-bg"
             >
                 <p class="overflow-hidden w-full text-[22px]">
                     •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
@@ -76,10 +76,10 @@
                         role="button"
                         tabindex=0
                         on:keydown={() => {}}
-                        class="pt-[12px] cursor-pointer h-fit relative z-10"
+                        class="pt-[12px] cursor-pointer h-fit relative z-10 "
                     >
                         <div
-                            class="h-[fit] w-full relative border-2 border-[#373737] rounded-[8px] grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] p-[24px] gap-[24px]"
+                            class="h-[fit] w-full relative border-2 border-[#373737] rounded-[8px] grid grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] p-[24px] gap-[24px] bg-primary-bg"
                         >
                             <svelte:component
                                 this={widget.component}
@@ -90,14 +90,14 @@
                             class="absolute top-0 left-[18px] bg-[#232323] px-[10px] flex gap-[10px]"
                         >
                             <svelte:component this={widget.icon} size={24} />
-                            <p class="text-[16px]">{widget.name}</p>
+                            <p class="text-[16px] bg-primary-bg">{widget.name}</p>
                         </div>
                     </div>
                 {/each}
             </div>
 
             <!-- Logs -->
-            <div class="h-[500px]">
+            <div class="h-[500px] bg-primary-bg">
                 <div class="pt-[12px] h-[500px] relative z-10">
                     <div
                         class="h-full w-full relative border-2 border-[#373737] rounded-[8px]"

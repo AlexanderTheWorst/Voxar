@@ -1,13 +1,26 @@
-import { REST, Routes } from "discord.js";
+/**
+ * @typedef {import("discord.js").Client} Client
+ */
+
+import { Collection, Events, Guild, REST, Routes } from "discord.js";
 import { stat, readdirSync, statSync } from "fs";
 import { resolve, basename } from "path";
 import { pathToFileURL } from "url";
+import { ModuleManager } from "@voxar/shared";
+import { mongo } from "@voxar/mongodb";
+
+// import shared from "../../index.js";
+
+// import server from "../api/server.js";
+import { GuildCache } from "../lib/db/GuildCache.js";
+import { UserCache } from "../lib/db/UserCache.js";
 
 const { DISCORD_BOT_TOKEN: token = undefined, DISCORD_CLIENT_ID: clientId = undefined } = process.env;
 
 const rest = new REST().setToken(token);
 
 export const data = {
+    event: Events.ClientReady,
     once: true
 }
 
@@ -16,7 +29,7 @@ function normalizeCommand(cmd) {
         name: cmd.name,
         description: cmd.description,
         type: cmd.type,
-        options: cmd.options?.map(opt => normalizeCommand(opt)), // recursive for nested options
+        options: (cmd.options || [])?.map(opt => normalizeCommand(opt)), // recursive for nested options
         default_member_permissions: cmd.default_member_permissions ?? null,
         dm_permission: cmd.dm_permission ?? true,
         nsfw: cmd.nsfw ?? false,
@@ -37,9 +50,11 @@ function commandsAreEqual(a, b) {
     return true;
 }
 
-export async function execute(client) {
-    console.log(`[Client] Bot online on ${client.user.username}`);
-
+/**
+ * 
+ * @param {Client} client 
+ */
+async function loadCommands(client) {
     let awaitCommands = [];
 
     let commandDirectoryPath = resolve(import.meta.dirname, "..", "commands");
@@ -58,6 +73,7 @@ export async function execute(client) {
     }
 
     let commands = await Promise.all(awaitCommands);
+    client.commands = commands;
 
     console.log(`[CommandHandler] ${commands.length} commands (${commands.flatMap(({ data }) => data.aliases).length} aliases) found.`)
 
@@ -94,4 +110,71 @@ export async function execute(client) {
 
         console.log(`[CommandHandler] Updated ${updatedData.length} commands.`);
     }
+}
+
+/**
+ * 
+ * @param {Client} client 
+ */
+async function loadModules(client) {
+    client.guilds.fetch(); // Fetch all guilds into cache.
+    
+    client.locals.modules = new Collection(); // Create the collection.
+    
+    console.log(`[ModuleManager] Loading modules for ${client.guilds.cache.size} guilds.`);
+
+    client.guilds.cache.forEach(async guild => {
+        let { id } = guild;
+
+        try {
+            client.locals?.modules.set(id, ModuleManager.all(guild));
+        } catch(err) {
+            console.log(`[ModuleManager] Failed to load modules for ${id}`);
+        }
+    });
+
+    console.log(`[ModuleManager] Loaded modules for ${client.locals?.modules.size} guilds.`);
+}
+
+/**
+ * 
+ * @param {Client} client 
+ */
+async function loadGuildCache(client) {
+    if (!mongo.connection.readyState == 1) console.log("[GuildCache] Mongoose is not connected.");
+
+    let guildCache = new GuildCache();
+    await guildCache.init();
+
+    client.locals.GuildCache = guildCache;
+}
+
+/**
+ * 
+ * @param {Client} client 
+ */
+async function loadUserCache(client) {
+    if (!mongo.connection.readyState == 1) console.log("[UserCache] Mongoose is not connected.");
+
+    let userCache = new UserCache();
+    await userCache.init();
+
+    client.locals.UserCache = userCache;
+}
+
+/**
+ * 
+ * @param {Client} client 
+ */
+export async function execute(client) {
+    console.log(`[Client] Bot online on ${client.user.username}`);
+
+    client.locals = {
+        // REST: server
+    }; // Assign locals for easier access.
+
+    await loadGuildCache(client);
+    await loadUserCache(client);
+    await loadModules(client);
+    await loadCommands(client);
 }

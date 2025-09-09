@@ -11,7 +11,7 @@ let keys = {};
 for (let file of files) {
     let fileUrl = pathToFileURL(resolve(path, file)).href;
 
-    let module = await import(fileUrl);
+    let module = await import(/* @vite-ignore */fileUrl);
     modules.push(module.default);
 }
 

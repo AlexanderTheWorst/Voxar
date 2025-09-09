@@ -2,6 +2,7 @@
 @import 'tailwindcss';
 
 @theme {
+    --color-primary-bg: #232323;
     --color-primary-accent: #7289DA;
     --color-inactive-accent: #4A4A4A;
     --font-roboto: "Roboto", sans-serif;
@@ -9,8 +10,10 @@
 
 body {
     font-family: var(--font-roboto);
-    background-color: #232323;
+    background-color: var(--color-primary-bg);
     color: white;
+    min-height: 100vh;
+    min-width: 100vw;
 }
 
 div::-webkit-scrollbar {

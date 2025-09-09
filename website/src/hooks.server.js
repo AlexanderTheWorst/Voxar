@@ -3,12 +3,22 @@ import { error, redirect } from '@sveltejs/kit';
 import { whoami } from '$lib/discord-api';
 import * as SessionModel from "@voxar/mongodb/models/session";
 import * as UserModel from "@voxar/mongodb/models/user";
+import path from 'path';
 
 const sessionLockedRoutes = ['/dashboard', '/auth/roblox'];
 
+// Preload all +page.server.js files under routes
+// const routeModules = import.meta.glob('/src/routes/**/+page.server.js');
+// const relativeModules = {};
+
+// Object.entries(routeModules).forEach(async ([path, mod]) => {
+// 	relativeModules[path.split("src/routes")[1].split("+page.server.js")[0]] = (await mod());
+// })
+
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-	const { cookies, locals, url } = event;
+	const { cookies, locals, url, route } = event;
+	const { id } = route;
 
 	// Always try to hydrate user/session if cookie exists
 	const session = cookies.get('session');
@@ -22,7 +32,7 @@ export async function handle({ event, resolve }) {
 
 				let userData = await UserModel.findById(user.user.id);
 				if (!userData) userData = await UserModel.create({ id: user.user.id });
-				let safeUserData = userData.toObject();
+				let safeUserData = userData;
 				locals.user_data = {
 					id: safeUserData.id,
 					linkedAccounts: safeUserData.linkedAccounts.map(g => ({

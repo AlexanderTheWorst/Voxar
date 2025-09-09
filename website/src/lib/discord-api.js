@@ -64,14 +64,15 @@ export function getRedirectUri(request) {
     return `${["localhost", "127.0.0.1"].includes(hostname) ? "http" : "https"}://${hostname}${port ? `:${port}` : ``}/auth/discord/callback`;
 }
 
-export function getOAuth2Link(request) {
+export function getOAuth2Link(request, state) {
     let redirect_uri = getRedirectUri(request);
 
     const searchParams = new URLSearchParams({
         client_id,
         redirect_uri,
         response_type: "code",
-        scope: "identify guilds"
+        scope: "identify guilds",
+        state
     });
 
     return `https://discord.com/oauth2/authorize?${searchParams.toString()}`;

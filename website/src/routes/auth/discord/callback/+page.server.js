@@ -2,6 +2,7 @@ import { tokenExchange, whoami as _whoami, getRedirectUri } from '$lib/discord-a
 import { v4 as uuidv4 } from "uuid";
 import * as SessionModel from '@voxar/mongodb/models/session';
 import * as UserModel from '@voxar/mongodb/models/user';
+import { redirect } from '@sveltejs/kit';
 
 export async function load(event) {
     const { locals, url, cookies } = event;
@@ -9,6 +10,7 @@ export async function load(event) {
     if (locals.session) return { error: "user_error", error_description: "Already logged in." }
 
     const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
     if (!code) return { error: "oauth2_error", error_description: "Discord did not provide a token." }
 
     const redirectUri = getRedirectUri(event);
@@ -30,7 +32,7 @@ export async function load(event) {
         id: whoami.user.id
     }));
 
-    const safeUserData = user_data.toObject();
+    const safeUserData = user_data;
 
     cookies.set('session', session.id, {
         httpOnly: true,
@@ -39,6 +41,11 @@ export async function load(event) {
         secure: !(["localhost", "127.0.0.1"]).includes(url.hostname),
         maxAge: 60 * 60 * 24 * 7
     });
+
+    if (state) {
+        let isRedirect = state.startsWith("/");
+        if (isRedirect) throw redirect(307, state);
+    }
 
     return {
         user: whoami.user,
@@ -49,6 +56,7 @@ export async function load(event) {
                 id: rA.id,
                 username: rA.username
             }))
-        }
+        },
+        state
     };
 }

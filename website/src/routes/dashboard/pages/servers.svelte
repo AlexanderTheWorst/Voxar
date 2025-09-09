@@ -78,59 +78,61 @@
         id="guilds_list"
     >
         {#each $guilds as guild}
-            <div
-                style="background: {guild.botInServer
-                    ? 'color-mix(in srgb, var(--color-primary-accent), rgba(255 255 255 / 0%) 87%)'
-                    : 'rgba(255 255 255 / 5%)'};"
-                class="
-                border-[2px] aspect-square rounded-[16px] p-[20px] overflow-hidden flex items-center justify-center
-                hover:translate-y-[-5px] transition-[translate] duration-300 hover:cursor-pointer
-                {guild.botInServer ? 'border-primary-accent/50' : ''}
-                "
-                class:saturate-0={!guild.botInServer}
-                class:border-inactive-accent={!guild.botInServer}
-            >
-                <a
-                    class="w-full h-full relative"
-                    on:click={() => addBot(guild)}
-                    href={guild.botInServer
-                        ? `/dashboard/@guild/${guild.id}`
-                        : `#`}
+            <div class="aspect-square bg-primary-bg">
+                <div
+                    style="background: {guild.botInServer
+                        ? 'color-mix(in srgb, var(--color-primary-accent), rgba(255 255 255 / 0%) 87%)'
+                        : 'rgba(255 255 255 / 5%)'};"
+                    class="
+                    border-[2px] aspect-square rounded-[16px] p-[20px] overflow-hidden flex items-center justify-center
+                    hover:translate-y-[-5px] transition-[translate] duration-300 hover:cursor-pointer
+                    {guild.botInServer ? 'border-primary-accent/50' : ''}
+                    "
+                    class:saturate-0={!guild.botInServer}
+                    class:border-inactive-accent={!guild.botInServer}
                 >
-                    <!-- `/auth/discord/@bot/add/${guild.id}`} -->
-                    <div class="w-full aspect-square">
-                        {#if guild.icon}
-                            <img
-                                class="h-full w-full relative rounded-full"
-                                src="https://cdn.discordapp.com/icons/{guild.id}/{guild.icon}.png?size=128"
-                                alt={guild.name}
-                            />
-                        {:else}
-                            <div
-                                class="
-                                        w-full h-full grid rounded-full overflow-hidden
-                                        place-items-center
-                                        "
-                            >
-                                <!-- Both layers occupy the same grid cell -->
+                    <a
+                        class="w-full h-full relative"
+                        on:click={() => addBot(guild)}
+                        href={guild.botInServer
+                            ? `/dashboard/@guild/${guild.id}`
+                            : `#`}
+                    >
+                        <!-- `/auth/discord/@bot/add/${guild.id}`} -->
+                        <div class="w-full aspect-square">
+                            {#if guild.icon}
+                                <img
+                                    class="h-full w-full relative rounded-full"
+                                    src="https://cdn.discordapp.com/icons/{guild.id}/{guild.icon}.png?size=128"
+                                    alt={guild.name}
+                                />
+                            {:else}
                                 <div
-                                    class="w-full h-full bg-[radial-gradient(circle_at_top_left,_#7289DABF,_#7289DA40)] opacity-[0.45] row-start-1 col-start-1"
-                                ></div>
-
-                                <p
-                                    class="text-3xl font-medium row-start-1 col-start-1 place-self-center relative"
+                                    class="
+                                    place-items-center
+                                    w-full h-full grid rounded-full overflow-hidden
+                                    "
                                 >
-                                    {guild.name
-                                        .split(" ")
-                                        .map((t) =>
-                                            t.substr(0, 1).toUpperCase(),
-                                        )
-                                        .join("")}
-                                </p>
-                            </div>
-                        {/if}
-                    </div>
-                </a>
+                                    <!-- Both layers occupy the same grid cell -->
+                                    <div
+                                        class="w-full h-full bg-[radial-gradient(circle_at_top_left,_#7289DABF,_#7289DA40)] opacity-[0.45] row-start-1 col-start-1"
+                                    ></div>
+
+                                    <p
+                                        class="text-3xl font-medium row-start-1 col-start-1 place-self-center relative"
+                                    >
+                                        {guild.name
+                                            .split(" ")
+                                            .map((t) =>
+                                                t.substr(0, 1).toUpperCase(),
+                                            )
+                                            .join("")}
+                                    </p>
+                                </div>
+                            {/if}
+                        </div>
+                    </a>
+                </div>
             </div>
         {/each}
     </div>

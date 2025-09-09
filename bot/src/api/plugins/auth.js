@@ -4,7 +4,6 @@ import { whoami } from '../../lib/discord-api.js';
 async function authPlugin(fastify) {
     fastify.decorate('authenticate', async (request, reply) => {
         const token = request.headers['authorization'];
-        // console.log(token);
         request.locals = { ...(request.locals ?? {}) };
 
         if (!token) {

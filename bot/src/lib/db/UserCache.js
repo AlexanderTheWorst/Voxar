@@ -1,6 +1,6 @@
-import { GuildModel } from "@voxar/mongodb/models/Guild.js";
+import { UserModel } from "@voxar/mongodb/models/User.js";
 
-export class GuildCache {
+export class UserCache {
     constructor() {
         this.cache = new Map(); // guildId -> guildData
         this.events = {
@@ -11,43 +11,48 @@ export class GuildCache {
 
     async init() {
         // Load all guilds once on startup
-        const guilds = await GuildModel.find({}).lean();
-        for (const guild of guilds) {
-            this.cache.set(guild.guildId, this.sanitize(guild));
+        const users = await UserModel.find({}).lean();
+        for (const user of users) {
+            let sanitized = this.sanitize(user);
+            sanitized.linkedAccounts = sanitized.linkedAccounts.map(a => ({ // Strip out access- refresh-tokens.
+                id: a.id,
+                username: a.username
+            }));
+            this.cache.set(user.id, sanitized);
         }
-        console.log(`[GuildCache] Loaded ${guilds.length} guilds`);
+        console.log(`[UserCache] Loaded ${users.length} users`);
 
         // Watch for changes in MongoDB
-        const stream = GuildModel.watch();
+        const stream = UserModel.watch();
         stream.on("change", (change) => this.handleChange(change));
     }
 
     async handleChange(change) {
         if (!change.documentKey) return;
 
-        const guildId = change.documentKey._id;
+        const userId = change.documentKey._id;
 
         switch (change.operationType) {
             case "insert":
             case "replace":
             case "update": {
                 // Fetch fresh copy and update cache
-                let updated = await GuildModel.findById(guildId).lean();
+                let updated = await UserModel.findById(userId).lean();
                 if (updated) {
                     updated = this.sanitize(updated);
-                    this.cache.set(updated.guildId, updated);
-                    console.log(`[GuildCache] Updated guild ${updated.guildId}`);
-                    this.events.change.forEach(callback => callback(updated.guildId, updated));
+                    this.cache.set(updated.id, updated);
+                    console.log(`[UserCache] Updated user ${updated.id}`);
+                    this.events.change.forEach(callback => callback(updated.id, updated));
                 }
                 break;
             }
 
             case "delete": {
-                this.cache.delete(guildId);
-                console.log(`[GuildCache] Removed guild ${guildId}`);
-                this.events.change.forEach(callback => callback(guildId));
+                this.cache.delete(userId);
+                console.log(`[UserCache] Removed user ${userId}`);
+                this.events.change.forEach(callback => callback(userId));
                 break;
-            }
+            }            
         }
     }
 
@@ -85,10 +90,10 @@ export class GuildCache {
     
         // Primitives
         return object;
-    }    
+    }
 
-    get(guildId) {
-        return this.cache.get(guildId);
+    get(userID) {
+        return this.cache.get(userID);
     }
 
     on(eventName, eventCallback) {
@@ -102,17 +107,17 @@ export class GuildCache {
         }
     }
 
-    async update(guildId, update) {
+    async update(userId, update) {
         // Write to DB
-        const updated = await GuildModel.findOneAndUpdate(
-            { guildId },
+        const updated = await UserModel.findOneAndUpdate(
+            { userId },
             update,
             { new: true, upsert: true }
         );
 
         // Update cache immediately
         if (updated) {
-            this.cache.set(guildId, updated.toObject());
+            this.cache.set(userId, updated.toObject());
         }
         return updated;
     }
